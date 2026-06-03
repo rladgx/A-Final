@@ -19,7 +19,7 @@
 
 ### GitHub Pages (모바일 포함)
 ```
-https://rladgx.github.io/A-Final
+https://rladgx.github.io/A-Final/
 ```
 
 ### 로컬 실행
