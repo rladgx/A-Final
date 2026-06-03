@@ -2904,7 +2904,13 @@ async function searchFood(){
       var prot=parseFloat(item.AMT_NUM3)||0;
       var fat=parseFloat(item.AMT_NUM4)||0;
       var serving=parseFloat(item.SERVING_SIZE)||100;
-      return '<div onclick="selectFood('+i+')" style="padding:10px 12px;border-bottom:0.5px solid var(--bdr);cursor:pointer;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">'
+      var el = document.createElement('div');
+el.setAttribute('onclick','selectFood('+i+')');
+el.setAttribute('style','padding:10px 12px;border-bottom:0.5px solid var(--bdr);cursor:pointer;');
+el.setAttribute('onmouseover','this.style.background="var(--bg3)"');
+el.setAttribute('onmouseout','this.style.background="transparent"');
+el.innerHTML = '<div style="display:flex;...">' + ... ;
+return el.outerHTML;
         +'<div style="display:flex;align-items:center;justify-content:space-between;">'
         +'<div style="font-size:13px;font-weight:500;">'+item.FOOD_NM+'</div>'
         +'<div style="font-size:10px;color:var(--or);font-weight:600;">'+Math.round(kcal)+' kcal</div>'
