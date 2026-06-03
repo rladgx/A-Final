@@ -2559,8 +2559,8 @@ function renderMyRes(){
       <div class="mch"><div class="mce">${EQUIPMENT_DATA[eq]?.icon||'🏋️'} ${eq}</div><span class="mcs ${isMy?'s-use':'s-wait'}">${status}</span></div>
       <div style="font-size:10px;color:var(--t3);">${data.sets}세트 · ${data.est}분 · ${data.at}</div>
       <div style="display:flex;gap:6px;margin-top:8px;">
-        ${isMy?`<button class="btn-p" style="flex:1;justify-content:center;font-size:11px;" onclick="completeUse('${eq}')"><i class="ti ti-check"></i> 완료</button>`:''}
-        ${!isMy?`<button class="btn-g" style="flex:1;justify-content:center;font-size:11px;" onclick="cancelWait('${eq}')"><i class="ti ti-x"></i> 취소</button>`:''}
+        ${isMy?'<button class="btn-p" style="flex:1;justify-content:center;font-size:11px;" onclick="completeUse(\"'+eq+'\")">✅ 완료</button>':''}
+        ${!isMy?'<button class="btn-g" style="flex:1;justify-content:center;font-size:11px;" onclick="cancelWait(\"'+eq+'\")">❌ 취소</button>':''}
       </div>
     </div>`;
   });
@@ -3017,7 +3017,7 @@ function renderMealList(){
           +'<div class="mp" style="width:'+Math.round(m.prot/tot*100)+'%;"></div>'
           +'<div class="mf" style="width:'+Math.round(m.fat/tot*100)+'%;"></div>'
           +'</div></div>'
-          +'<button onclick="deleteMeal(''+k+'','+i+')" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:4px;flex-shrink:0;"><i class="ti ti-x"></i></button>'
+          +'<button onclick="deleteMealBtn(this)" data-type="'+k+'" data-idx="'+i+'" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:4px;flex-shrink:0;"><i class="ti ti-x"></i></button>'
           +'</div>';
       }).join('')+'</div>';
   }).join('');
@@ -3035,6 +3035,13 @@ function updateDietSummary(){
   s('d-prot',Math.round(prot*10)/10+'g');
   s('d-fat',Math.round(fat*10)/10+'g');
 }
+
+function deleteMealBtn(btn){
+  var t=btn.getAttribute('data-type');
+  var i=parseInt(btn.getAttribute('data-idx'));
+  deleteMeal(t,i);
+}
+window.deleteMealBtn=deleteMealBtn;
 
 function deleteMeal(mealType,idx){
   var order=['아침','점심','저녁','간식','운동 전','운동 후'];
