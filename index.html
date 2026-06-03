@@ -4,8 +4,8 @@
  GYMlog - 스마트 운동 플래너
 =================================================================
  [과목] 알고리즘
- [팀명] 2팀
- [팀원] 202439731 김동현, 남현욱, 박민석
+ [팀명] OOO팀
+ [팀원] 팀원A, 팀원B, 팀원C
 
  [적용 알고리즘 & 자료구조]
  ┌─────────────────────────────────────────────────────┐
@@ -2905,18 +2905,16 @@ async function searchFood(){
       var fat=parseFloat(item.AMT_NUM4)||0;
       var serving=parseFloat(item.SERVING_SIZE)||100;
       var el = document.createElement('div');
-el.setAttribute('onclick','selectFood('+i+')');
-el.setAttribute('style','padding:10px 12px;border-bottom:0.5px solid var(--bdr);cursor:pointer;');
-el.setAttribute('onmouseover','this.style.background="var(--bg3)"');
-el.setAttribute('onmouseout','this.style.background="transparent"');
-el.innerHTML = '<div style="display:flex;...">' + ... ;
-return el.outerHTML;
-        +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+      el.setAttribute('onclick','selectFood('+i+')');
+      el.setAttribute('style','padding:10px 12px;border-bottom:0.5px solid var(--bdr);cursor:pointer;');
+      el.setAttribute('onmouseover','this.style.background="var(--bg3)"');
+      el.setAttribute('onmouseout','this.style.background="transparent"');
+      el.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;">'
         +'<div style="font-size:13px;font-weight:500;">'+item.FOOD_NM+'</div>'
         +'<div style="font-size:10px;color:var(--or);font-weight:600;">'+Math.round(kcal)+' kcal</div>'
         +'</div>'
-        +'<div style="font-size:10px;color:var(--t3);margin-top:3px;">탄 '+carb.toFixed(1)+'g · 단 '+prot.toFixed(1)+'g · 지 '+fat.toFixed(1)+'g · 기준 '+serving+'g</div>'
-        +'</div>';
+        +'<div style="font-size:10px;color:var(--t3);margin-top:3px;">탄 '+carb.toFixed(1)+'g · 단 '+prot.toFixed(1)+'g · 지 '+fat.toFixed(1)+'g · 기준 '+serving+'g</div>';
+      return el.outerHTML;
     }).join('');
   }catch(err){
     loadEl.style.display='none';
