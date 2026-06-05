@@ -2967,8 +2967,8 @@ function renderMyRes(){
       <div class="mch"><div class="mce">${EQUIPMENT_DATA[eq]?.icon||'🏋️'} ${eq}</div><span class="mcs ${isMy?'s-use':'s-wait'}">${status}</span></div>
       <div style="font-size:10px;color:var(--t3);">${data.sets}세트 · ${data.est}분 · ${data.at}</div>
       <div style="display:flex;gap:6px;margin-top:8px;">
-        ${isMy?'<button class="btn-p" style="flex:1;justify-content:center;font-size:11px;" onclick="completeUse(\"'+eq+'\")">✅ 완료</button>':''}
-        ${!isMy?'<button class="btn-g" style="flex:1;justify-content:center;font-size:11px;" onclick="cancelWait(\"'+eq+'\")">❌ 취소</button>':''}
+        ${isMy?`<button class="btn-p" style="flex:1;justify-content:center;font-size:11px;" onclick="completeUse('${eq}')">✅ 완료</button>`:''}
+        ${!isMy?`<button class="btn-g" style="flex:1;justify-content:center;font-size:11px;" onclick="cancelWait('${eq}')">❌ 취소</button>`:''}
       </div>
     </div>`;
   });
@@ -3293,6 +3293,7 @@ window.initDiet=initDiet;
 // [외부 API] 식품안전처 식품영양성분 데이터베이스 검색
 // 공공데이터포털 OpenAPI + allorigins.win CORS 프록시
 // 응답: 식품명, 칼로리, 탄수화물, 단백질, 지방
+
 async function searchFood(){
   const q = document.getElementById('food-search-input').value.trim();
   if(!q){ showToast('음식 이름을 입력해주세요!'); return; }
@@ -3301,12 +3302,14 @@ async function searchFood(){
   const errEl=document.getElementById('food-search-error');
   resultEl.style.display='none'; errEl.style.display='none'; loadEl.style.display='block';
   try{
-    // 내장 식품 DB 검색 (식품안전처 데이터 기반)
     await new Promise(r=>setTimeout(r,300));
     const keyword = q.toLowerCase();
-    const items = FOOD_DB.filter(f=>f.FOOD_NM.toLowerCase().includes(keyword)).slice(0,20);
-    const data = { body: { items: items.length ? items : null } };
+    
+    // 변수 이름을 filteredItems로 고쳐서 충돌 우회
+    const filteredItems = FOOD_DB.filter(f=>f.FOOD_NM.toLowerCase().includes(keyword)).slice(0,20);
+    const data = { body: { items: filteredItems.length ? filteredItems : null } };
     loadEl.style.display='none';
+    
     const items=data&&data.body&&data.body.items;
     if(!items||!items.length){
       errEl.style.display='block';
