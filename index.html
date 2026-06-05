@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <!--
 =================================================================
- GYMlog - 스마트 운동 플래너
+ GYMlog - 스마트 운동 플래너 (알고리즘이 적용된 헬스 서비스 프로토타입)
+=================================================================
+ [과목] 알고리즘  |  [팀명] 2팀
+ [팀원] 202439731 김동현 / 202439741 남현욱 / 202439742 박민석
 =================================================================
  [과목] 알고리즘
- [팀명] OOO팀
- [팀원] 팀원A, 팀원B, 팀원C
+ [팀명] 2팀
+ [팀원] 202439731 김동현, 202439741 남현욱, 202439742 박민석
 
  [적용 알고리즘 & 자료구조]
  ┌─────────────────────────────────────────────────────┐
@@ -528,6 +531,7 @@ body.light .pbadge{background:rgba(79,70,229,0.15);color:#4F46E5;}
   <button class="nb" onclick="sw('recommend')" id="n-recommend" title="루틴추천"><i class="ti ti-target"></i></button>
   <button class="nb" onclick="sw('res')" id="n-res" title="기구예약"><i class="ti ti-qrcode"></i></button>
   <button class="nb" onclick="sw('playlist')" id="n-playlist" title="플레이리스트"><i class="ti ti-music"></i></button>
+  <button class="nb" onclick="sw('find')" id="n-find" title="운동 찾기"><i class="ti ti-search"></i></button>
   <button class="nb" onclick="sw('stats')" id="n-stats" title="분석"><i class="ti ti-chart-line"></i></button>
   <button class="nb" onclick="sw('diet')" id="n-diet" title="식단"><i class="ti ti-salad"></i></button>
   <div class="nsp"></div>
@@ -810,6 +814,11 @@ body.light .pbadge{background:rgba(79,70,229,0.15);color:#4F46E5;}
       <div class="sv" id="profile-muscle" style="font-size:17px;">-</div>
       <div style="font-size:9px;color:var(--t3);">kg <span id="profile-muscle-diff" style="font-size:9px;"></span></div>
     </div>
+    <div class="sc">
+      <div class="sl">BMI</div>
+      <div class="sv" id="profile-bmi" style="font-size:17px;">-</div>
+      <div style="font-size:9px;" id="profile-bmi-label">-</div>
+    </div>
   </div>
   <button class="btn-g" style="width:100%;justify-content:center;margin-bottom:12px;font-size:12px;" onclick="editBodyInfo()">
     <i class="ti ti-plus"></i> 오늘 신체 정보 기록
@@ -892,6 +901,30 @@ body.light .pbadge{background:rgba(79,70,229,0.15);color:#4F46E5;}
   </div>
 </div>
 
+<!-- FIND (운동 찾아보기) -->
+<div class="view panel" id="view-find">
+  <div class="ph"><div><div class="pt">운동 찾아보기</div><div class="ps">BST + DFS + 이진 탐색</div></div></div>
+  <div class="card" style="margin-bottom:10px;">
+    <div class="sec" style="margin-bottom:8px;"><i class="ti ti-search"></i> 운동 검색</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <input id="ex-search-input" class="rf-inp" type="text" placeholder="운동 이름 또는 근육 부위 검색..."
+        style="flex:1;" onkeydown="if(event.key==='Enter')searchExercise()">
+      <button class="btn-p" onclick="searchExercise()" style="padding:8px 14px;"><i class="ti ti-search"></i></button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;" id="find-filter-btns">
+      <button onclick="filterByPart('전체',this)" class="tag-btn active" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--or);background:var(--ord);color:var(--or);cursor:pointer;">전체</button>
+      <button onclick="filterByPart('가슴',this)" class="tag-btn" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--bdr2);background:transparent;color:var(--t3);cursor:pointer;">가슴</button>
+      <button onclick="filterByPart('등',this)" class="tag-btn" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--bdr2);background:transparent;color:var(--t3);cursor:pointer;">등</button>
+      <button onclick="filterByPart('하체',this)" class="tag-btn" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--bdr2);background:transparent;color:var(--t3);cursor:pointer;">하체</button>
+      <button onclick="filterByPart('어깨',this)" class="tag-btn" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--bdr2);background:transparent;color:var(--t3);cursor:pointer;">어깨</button>
+      <button onclick="filterByPart('팔',this)" class="tag-btn" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--bdr2);background:transparent;color:var(--t3);cursor:pointer;">팔</button>
+      <button onclick="filterByPart('복근',this)" class="tag-btn" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--bdr2);background:transparent;color:var(--t3);cursor:pointer;">복근</button>
+    </div>
+    <div style="font-size:10px;color:var(--t3);" id="find-algo-label">🌲 BST 이진 탐색 | 🔍 DFS 키워드 탐색</div>
+  </div>
+  <div id="find-result" style="font-size:12px;color:var(--t3);text-align:center;padding:20px;">운동을 검색해보세요!</div>
+</div>
+
 <!-- STATS -->
 <div class="view panel" id="view-stats">
   <div class="ph"><div><div class="pt">성장 분석 <span class="pbadge">PRO</span></div><div class="ps">Firebase 저장 기록 기반</div></div></div>
@@ -917,16 +950,56 @@ body.light .pbadge{background:rgba(79,70,229,0.15);color:#4F46E5;}
   <div class="ph"><div><div class="pt">식단</div><div class="ps" id="diet-date"></div></div></div>
 
   <!-- 목표 칼로리 요약 -->
-  <div class="sgrid" id="diet-summary">
-    <div class="sc"><div class="sl">칼로리</div><div class="sv" style="color:var(--or);" id="d-kcal">0</div><div class="sch" style="color:var(--t3);">kcal</div></div>
-    <div class="sc"><div class="sl">탄수화물</div><div class="sv" style="color:#42A5F5;" id="d-carb">0g</div></div>
-    <div class="sc"><div class="sl">단백질</div><div class="sv" style="color:var(--green);" id="d-prot">0g</div></div>
-    <div class="sc"><div class="sl">지방</div><div class="sv" style="color:#FFA726;" id="d-fat">0g</div></div>
+  <div class="card" style="margin-bottom:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div style="font-size:12px;font-weight:600;">오늘 칼로리</div>
+      <div style="font-size:11px;color:var(--t3);">목표 <span id="d-goal-kcal">2,000</span> kcal</div>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+      <div style="font-size:28px;font-weight:700;color:var(--or);" id="d-kcal">0</div>
+      <div style="font-size:12px;color:var(--t3);">kcal</div>
+    </div>
+    <div style="height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:12px;">
+      <div id="d-kcal-bar" style="height:100%;background:var(--or);border-radius:3px;width:0%;transition:width .4s;"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+      <div style="background:var(--bg3);border-radius:8px;padding:9px;text-align:center;">
+        <div style="font-size:9px;color:var(--t3);margin-bottom:3px;">탄수화물</div>
+        <div style="font-size:16px;font-weight:700;color:#42A5F5;" id="d-carb">0g</div>
+        <div style="height:3px;background:var(--bg4);border-radius:2px;margin-top:4px;overflow:hidden;">
+          <div id="d-carb-bar" style="height:100%;background:#42A5F5;width:0%;transition:width .4s;"></div>
+        </div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:9px;text-align:center;">
+        <div style="font-size:9px;color:var(--t3);margin-bottom:3px;">단백질</div>
+        <div style="font-size:16px;font-weight:700;color:var(--green);" id="d-prot">0g</div>
+        <div style="height:3px;background:var(--bg4);border-radius:2px;margin-top:4px;overflow:hidden;">
+          <div id="d-prot-bar" style="height:100%;background:var(--green);width:0%;transition:width .4s;"></div>
+        </div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:9px;text-align:center;">
+        <div style="font-size:9px;color:var(--t3);margin-bottom:3px;">지방</div>
+        <div style="font-size:16px;font-weight:700;color:#FFA726;" id="d-fat">0g</div>
+        <div style="height:3px;background:var(--bg4);border-radius:2px;margin-top:4px;overflow:hidden;">
+          <div id="d-fat-bar" style="height:100%;background:#FFA726;width:0%;transition:width .4s;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 목표 설정 -->
+  <div style="display:flex;gap:8px;margin-bottom:10px;">
+    <button class="btn-g" style="flex:1;justify-content:center;font-size:11px;" onclick="setGoalKcal()">
+      <i class="ti ti-target"></i> 목표 칼로리 설정
+    </button>
+    <button class="btn-g" style="flex:1;justify-content:center;font-size:11px;" onclick="showDietHistory()">
+      <i class="ti ti-history"></i> 식단 히스토리
+    </button>
   </div>
 
   <!-- 음식 검색 -->
   <div class="card" style="margin-bottom:12px;">
-    <div class="sec" style="margin-bottom:8px;"><i class="ti ti-search"></i> 음식 검색</div>
+    <div class="sec" style="margin-bottom:8px;"><i class="ti ti-search"></i> 음식 검색 <span style="font-size:9px;color:var(--t3);font-weight:400;">(내장 DB 80개)</span></div>
     <div style="display:flex;gap:8px;margin-bottom:8px;">
       <input id="food-search-input" class="rf-inp" type="text" placeholder="예: 닭가슴살, 현미밥, 바나나..."
         style="flex:1;" onkeydown="if(event.key==='Enter')searchFood()">
@@ -994,6 +1067,12 @@ body.light .pbadge{background:rgba(79,70,229,0.15);color:#4F46E5;}
   <div class="sec"><i class="ti ti-clock"></i> 오늘 식사 기록</div>
   <div id="meal-list"></div>
   <div style="text-align:center;padding:16px;font-size:12px;color:var(--t3);" id="meal-empty">음식을 검색해서 추가해보세요!</div>
+
+  <!-- 식단 히스토리 -->
+  <div id="diet-history-panel" style="display:none;">
+    <div class="sec"><i class="ti ti-calendar"></i> 최근 식단 기록</div>
+    <div id="diet-history-list"></div>
+  </div>
 </div>
 
 </div><!-- /main -->
@@ -1368,6 +1447,19 @@ function updateBodyDisplay(bodyData){
     }
   };
 
+  // BMI 계산
+  if(latest && latest.height && latest.weight){
+    var bmi = (latest.weight / Math.pow(latest.height/100, 2)).toFixed(1);
+    var bmiEl = document.getElementById('profile-bmi');
+    var bmiLbl = document.getElementById('profile-bmi-label');
+    if(bmiEl) bmiEl.textContent = bmi;
+    if(bmiLbl){
+      var label = bmi<18.5?'저체중':bmi<23?'정상':bmi<25?'과체중':'비만';
+      var color = bmi<18.5?'var(--blue)':bmi<23?'var(--green)':bmi<25?'var(--amber)':'var(--red)';
+      bmiLbl.textContent = label;
+      bmiLbl.style.color = color;
+    }
+  }
   setVal('profile-height', latest?.height, null, null);
   setVal('profile-weight', latest?.weight, 'profile-weight-diff', prev?.weight);
   setVal('profile-fat',    latest?.fat,    'profile-fat-diff',    prev?.fat);
@@ -1558,11 +1650,46 @@ function renderVolChart(){
   drawLineChart(svg, lbEl, data, 'vol', 'var(--or)');
 }
 
+// ── Max-Heap 자료구조 구현 ──
+// [자료구조] 최대 힙 (Max-Heap)
+// heapInsert: heapify-up으로 삽입 O(log N)
+// heapExtractMax: heapify-down으로 최댓값 추출 O(log N)
+function heapInsert(heap, item) {
+  heap.push(item);
+  var i = heap.length - 1;
+  while (i > 0) {
+    var parent = Math.floor((i - 1) / 2);
+    if (heap[parent].cnt < heap[i].cnt) {
+      var tmp = heap[parent]; heap[parent] = heap[i]; heap[i] = tmp;
+      i = parent;
+    } else break;
+  }
+}
+function heapExtractMax(heap) {
+  if (heap.length === 0) return null;
+  var max = heap[0];
+  var last = heap.pop();
+  if (heap.length > 0) {
+    heap[0] = last;
+    var i = 0;
+    while (true) {
+      var l = 2*i+1, r = 2*i+2, largest = i;
+      if (l < heap.length && heap[l].cnt > heap[largest].cnt) largest = l;
+      if (r < heap.length && heap[r].cnt > heap[largest].cnt) largest = r;
+      if (largest === i) break;
+      var tmp = heap[i]; heap[i] = heap[largest]; heap[largest] = tmp;
+      i = largest;
+    }
+  }
+  return max;
+}
+
+// [알고리즘] 힙 정렬 - Max-Heap으로 Top5 운동 추출
+// 시간복잡도: O(N log N) 삽입, O(K log N) 추출 (K=5)
 function renderTop5(){
   const el = document.getElementById('pf-top-exercises');
   if(!el) return;
 
-  // 힙 정렬로 Top5 추출
   const exCount = {};
   records.forEach(r=>{
     if(r.exercises) r.exercises.forEach(ex=>{
@@ -1571,11 +1698,14 @@ function renderTop5(){
     });
   });
 
-  // Max Heap
-  const heap = Object.entries(exCount).map(([name,cnt])=>({name,cnt}));
-  // [알고리즘] 힙 정렬 (Heap Sort) - 최다 수행 운동 추출
-  heap.sort((a,b)=>b.cnt-a.cnt);
-  const top5 = heap.slice(0,5);
+  // Max-Heap 구성
+  const maxHeap = [];
+  Object.entries(exCount).forEach(([name,cnt])=>{ heapInsert(maxHeap, {name, cnt}); });
+
+  // Top5 추출
+  const top5 = [];
+  for(var k=0; k<5 && maxHeap.length>0; k++){ top5.push(heapExtractMax(maxHeap)); }
+
 
   if(!top5.length){
     el.innerHTML='<div style="font-size:12px;color:var(--t3);text-align:center;padding:16px;">운동 기록이 없어요</div>';
@@ -1716,6 +1846,7 @@ window.startApp = function() {
   buildCal();
   buildRpe();
   buildIntensityChart();
+  buildExerciseBST(); // BST 초기 구축
   buildFatigueBars();
   initQueueState();
   calcBB();
@@ -1736,6 +1867,7 @@ function sw(id) {
   if(id==='playlist') renderPlaylist();
   if(id==='res') renderEqGrid();
   if(id==='stats') renderStats();
+  if(id==='find'){if(!exerciseBST)buildExerciseBST();renderFindAll();}
   if(id==='home') updateHomeStats();
   if(id==='profile'){loadProfile();const nb=document.getElementById('sidebar-user');if(nb)nb.classList.add('active');}
   if(id==='diet') initDiet();
@@ -1844,6 +1976,197 @@ window.togTimer=togTimer; window.rstTimer=rstTimer; window.startRest=startRest;
 // ═══════════════════════════════════════════════
 // BARBELL SUPPORTER
 // ═══════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════
+// [자료구조] 이진 탐색 트리 (BST - Binary Search Tree)
+// 운동 데이터를 가나다순으로 정렬·저장
+// 삽입/검색: 평균 O(log N), 최악 O(N)
+// ═══════════════════════════════════════════════
+class BSTNode {
+  constructor(key, data) {
+    this.key = key;   // 운동 이름 (정렬 기준)
+    this.data = data; // 운동 전체 데이터
+    this.left = null;
+    this.right = null;
+  }
+}
+
+class ExerciseBST {
+  constructor() { this.root = null; }
+
+  // BST 삽입: O(log N)
+  insert(key, data) {
+    this.root = this._insert(this.root, key, data);
+  }
+  _insert(node, key, data) {
+    if (!node) return new BSTNode(key, data);
+    if (key < node.key) node.left = this._insert(node.left, key, data);
+    else if (key > node.key) node.right = this._insert(node.right, key, data);
+    return node;
+  }
+
+  // [알고리즘] 이진 탐색: 정확한 이름으로 O(log N) 검색
+  search(key) {
+    return this._search(this.root, key);
+  }
+  _search(node, key) {
+    if (!node) return null;
+    if (key === node.key) return node.data;
+    if (key < node.key) return this._search(node.left, key);
+    return this._search(node.right, key);
+  }
+
+  // [알고리즘] DFS (깊이 우선 탐색): 키워드 포함 운동 전체 탐색
+  // 재귀 스택을 이용한 전위 순회 DFS, O(N)
+  dfsSearch(keyword) {
+    const results = [];
+    this._dfs(this.root, keyword.toLowerCase(), results);
+    return results;
+  }
+  _dfs(node, keyword, results) {
+    if (!node) return;
+    // 전위 순회: 현재 노드 먼저 검사
+    const name = (node.key || '').toLowerCase();
+    const muscle = (node.data.muscle || '').toLowerCase();
+    if (name.includes(keyword) || muscle.includes(keyword)) {
+      results.push(node.data);
+    }
+    this._dfs(node.left, keyword, results);   // 왼쪽 서브트리
+    this._dfs(node.right, keyword, results);  // 오른쪽 서브트리
+  }
+
+  // 중위 순회: 가나다순 정렬 결과
+  inorder() {
+    const results = [];
+    this._inorder(this.root, results);
+    return results;
+  }
+  _inorder(node, results) {
+    if (!node) return;
+    this._inorder(node.left, results);
+    results.push(node.data);
+    this._inorder(node.right, results);
+  }
+}
+
+// BST 전역 인스턴스 (앱 시작 시 한 번만 구축)
+let exerciseBST = null;
+
+function buildExerciseBST() {
+  exerciseBST = new ExerciseBST();
+  const seen = new Set();
+  Object.entries(EXERCISES_DATA).forEach(([type, parts]) => {
+    Object.entries(parts).forEach(([part, exs]) => {
+      exs.forEach(ex => {
+        if (!seen.has(ex.name)) {
+          seen.add(ex.name);
+          exerciseBST.insert(ex.name, {...ex, type, part});
+        }
+      });
+    });
+  });
+  console.log('[BST] 운동 데이터 삽입 완료:', seen.size, '개');
+}
+
+// [알고리즘] 운동 검색: DFS + 이진탐색 결합
+function searchExercise() {
+  if (!exerciseBST) buildExerciseBST();
+  const q = document.getElementById('ex-search-input').value.trim();
+  const resultEl = document.getElementById('find-result');
+  const algoEl = document.getElementById('find-algo-label');
+  if (!q) { renderFindAll(); return; }
+
+  // 1단계: 이진 탐색으로 정확한 이름 검색
+  const exact = exerciseBST.search(q);
+  // 2단계: DFS로 키워드 포함 전체 탐색
+  const dfsResults = exerciseBST.dfsSearch(q);
+
+  if (exact) {
+    algoEl.textContent = '🎯 이진 탐색(Binary Search) 정확 일치 발견!';
+  } else {
+    algoEl.textContent = `🔍 DFS 탐색 결과: ${dfsResults.length}개`;
+  }
+
+  const results = exact ? [exact, ...dfsResults.filter(r=>r.name!==exact.name)] : dfsResults;
+  renderFindResults(results, q);
+}
+window.searchExercise = searchExercise;
+
+function filterByPart(part, btn) {
+  if (!exerciseBST) buildExerciseBST();
+  // 필터 버튼 스타일
+  document.querySelectorAll('.tag-btn').forEach(b => {
+    b.style.background = 'transparent';
+    b.style.borderColor = 'var(--bdr2)';
+    b.style.color = 'var(--t3)';
+  });
+  if (btn) {
+    btn.style.background = 'var(--ord)';
+    btn.style.borderColor = 'var(--or)';
+    btn.style.color = 'var(--or)';
+  }
+
+  const algoEl = document.getElementById('find-algo-label');
+  if (part === '전체') {
+    // 중위 순회로 전체 가나다순 출력
+    algoEl.textContent = '📋 BST 중위순회 (가나다순 정렬)';
+    renderFindResults(exerciseBST.inorder(), '');
+  } else {
+    // DFS로 해당 부위 필터링
+    algoEl.textContent = `🔍 DFS로 '${part}' 부위 탐색`;
+    const results = exerciseBST.dfsSearch(part);
+    renderFindResults(results, part);
+  }
+}
+window.filterByPart = filterByPart;
+
+function renderFindAll() {
+  if (!exerciseBST) buildExerciseBST();
+  const algoEl = document.getElementById('find-algo-label');
+  algoEl.textContent = '📋 BST 중위순회 (가나다순 정렬)';
+  renderFindResults(exerciseBST.inorder(), '');
+}
+
+function renderFindResults(results, keyword) {
+  const el = document.getElementById('find-result');
+  if (!el) return;
+  if (!results || !results.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3);">검색 결과가 없어요</div>';
+    return;
+  }
+  el.innerHTML = results.slice(0,30).map(ex => {
+    return '<div style="padding:10px 0;border-bottom:0.5px solid var(--bdr);">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;">'
+      + '<div>'
+      + '<div style="font-size:13px;font-weight:500;">' + ex.name + '</div>'
+      + '<div style="font-size:10px;color:var(--t3);margin-top:2px;">'
+      + (ex.muscle||'') + ' · ' + (ex.level||'') + ' · ' + (ex.equipment||'')
+      + '</div></div>'
+      + '<div style="display:flex;gap:6px;align-items:center;">'
+      + (ex.youtube ? '<a href="' + ex.youtube + '" target="_blank" style="color:var(--or);font-size:11px;">▶</a>' : '')
+      + '<button onclick="addExByName(\''+ex.name+'\',\''+ex.muscle+'\',\''+ex.level+'\',\''+ex.equipment+'\',\''+ex.youtube+'\',\''+ex.part+'\')" style="background:var(--ord);border:0.5px solid var(--or);color:var(--or);border-radius:6px;padding:3px 8px;font-size:10px;cursor:pointer;">추가</button>'
+      + '</div></div>';
+  }).join('') + (results.length>30?'<div style="text-align:center;padding:8px;font-size:11px;color:var(--t3);">외 '+(results.length-30)+'개</div>':'');
+}
+
+function addExByName(name,muscle,level,equipment,youtube,part) {
+  workoutLog.push({name:name||'', muscle:muscle||'', rm:null,
+    sets:[{w:0,r:10,done:false},{w:0,r:10,done:false},{w:0,r:10,done:false}]});
+  buildExList();
+  showToast("'"+name+"' 오늘 운동에 추가됐어요!");
+  sw('log');
+}
+window.addExByName=addExByName;
+
+function addExFromFind(ex) {
+  workoutLog.push({name:ex.name, muscle:ex.muscle||'', rm:null,
+    sets:[{w:0,r:10,done:false},{w:0,r:10,done:false},{w:0,r:10,done:false}]});
+  buildExList();
+  showToast("'" + ex.name + "' 오늘 운동에 추가됐어요!");
+  sw('log');
+}
+window.addExFromFind = addExFromFind;
+
 // [기능] 바벨 서포터 - 목표 중량에서 원판 조합 자동 계산
 // 20kg 바벨 기준, 한쪽 원판 = (목표 - 20) / 2
 // 20,15,10,5,2.5,1.25kg 원판 순서로 그리디 선택
@@ -2774,17 +3097,29 @@ function runRecommend(){
   const seen=new Set(); candidates=candidates.filter(e=>{if(seen.has(e.name))return false;seen.add(e.name);return true;});
 
   // 그리디
-  const scored=candidates.map(ex=>{
+  const // [알고리즘] 그리디 (Greedy) - 효율(점수/시간) 높은 순 정렬 후 시간 내 최대 선택
+  scored=candidates.map(ex=>{
     const sets=levelSets[ex.level]||3;
     const tot=ex.time_per_set*sets;
     const score=(goalScore[goal]||{})[ex.muscle]||1;
     return{eff:score/tot,tot,sets,ex};
   }).sort((a,b)=>b.eff-a.eff);
   let rem=time, selected=[];
+  scored.sort((a,b)=>b.eff-a.eff); // [알고리즘] 그리디 - 효율 높은 순 정렬
   for(const {eff,tot,sets,ex} of scored){if(rem>=tot){selected.push({...ex,recSets:sets,recTime:tot});rem-=tot;}}
 
   // 위상정렬
-  const deps={스쿼트:['레그프레스'],레그프레스:['레그컬','레그익스텐션'],벤치프레스:['케이블 크로스오버'],랫풀다운:['트라이셉스 푸시다운']};
+  const deps={
+    '바벨 백스쿼트':['레그 프레스','레그 컬'],
+    '레그 프레스':['레그 컬','레그 익스텐션'],
+    '벤치프레스':['스탠딩 케이블 플라이','펙덱 플라이 머신'],
+    '인클라인 벤치프레스':['인클라인 덤벨 플라이'],
+    '랫풀다운':['시티드 케이블 로우','패러럴그립 랫풀다운'],
+    '오버헤드 프레스':['덤벨 레터럴 레이즈','페이스 풀'],
+    '컨벤셔널 데드리프트':['루마니안 데드리프트'],
+    '루마니안 데드리프트':['레그 컬'],
+    '바벨 힙 쓰러스트':['힙 쓰러스트','글루트 브릿지'],
+  };
   const names=selected.map(e=>e.name);
   const inDeg={};// [알고리즘] 위상 정렬 (Topological Sort - Kahn's Algorithm)
   // 운동 간 선행관계(deps)를 DAG로 표현, 진입차수 0부터 처리
@@ -3111,11 +3446,31 @@ function updateDietSummary(){
   var carb=todayMeals.reduce(function(a,m){return a+m.carb;},0);
   var prot=todayMeals.reduce(function(a,m){return a+m.prot;},0);
   var fat=todayMeals.reduce(function(a,m){return a+m.fat;},0);
+  var goalKcal = parseInt(localStorage.getItem('goalKcal')||'2000');
+  var goalCarb = Math.round(goalKcal*0.5/4);
+  var goalProt = Math.round(goalKcal*0.25/4);
+  var goalFat  = Math.round(goalKcal*0.25/9);
+
   function s(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
-  s('d-kcal',Math.round(kcal));
-  s('d-carb',Math.round(carb*10)/10+'g');
-  s('d-prot',Math.round(prot*10)/10+'g');
-  s('d-fat',Math.round(fat*10)/10+'g');
+  function bar(id,val,max){
+    var el=document.getElementById(id);
+    if(el) el.style.width=Math.min(Math.round(val/max*100),100)+'%';
+  }
+
+  s('d-kcal', Math.round(kcal));
+  s('d-carb', Math.round(carb*10)/10+'g');
+  s('d-prot', Math.round(prot*10)/10+'g');
+  s('d-fat',  Math.round(fat*10)/10+'g');
+  s('d-goal-kcal', goalKcal.toLocaleString());
+
+  bar('d-kcal-bar', kcal, goalKcal);
+  bar('d-carb-bar', carb, goalCarb);
+  bar('d-prot-bar', prot, goalProt);
+  bar('d-fat-bar',  fat,  goalFat);
+
+  // 초과 시 빨간색
+  var kcalBar = document.getElementById('d-kcal-bar');
+  if(kcalBar) kcalBar.style.background = kcal > goalKcal ? 'var(--red)' : 'var(--or)';
 }
 
 function deleteMealBtn(btn){
@@ -3124,6 +3479,58 @@ function deleteMealBtn(btn){
   deleteMeal(t,i);
 }
 window.deleteMealBtn=deleteMealBtn;
+
+// 목표 칼로리 설정
+function setGoalKcal(){
+  var current = localStorage.getItem('goalKcal')||'2000';
+  var input = prompt('목표 칼로리를 입력하세요 (kcal)', current);
+  if(!input) return;
+  var val = parseInt(input);
+  if(isNaN(val)||val<500||val>5000){ showToast('500~5000 사이로 입력해주세요!'); return; }
+  localStorage.setItem('goalKcal', val);
+  updateDietSummary();
+  showToast('목표 칼로리: '+val+'kcal 설정됐어요!');
+}
+window.setGoalKcal=setGoalKcal;
+
+// 식단 히스토리
+function showDietHistory(){
+  var panel = document.getElementById('diet-history-panel');
+  var list = document.getElementById('diet-history-list');
+  if(!panel||!list) return;
+  var isVisible = panel.style.display!=='none';
+  if(isVisible){ panel.style.display='none'; return; }
+
+  if(!window._dbReady||!currentUser||!currentUser.phone){
+    showToast('로그인이 필요해요!'); return;
+  }
+  panel.style.display='block';
+  list.innerHTML='<div style="font-size:12px;color:var(--t3);text-align:center;padding:12px;">불러오는 중...</div>';
+
+  window._get(window._ref(window._db,'meals/'+currentUser.phone)).then(function(snap){
+    if(!snap.exists()){
+      list.innerHTML='<div style="font-size:12px;color:var(--t3);text-align:center;padding:12px;">식단 기록이 없어요</div>';
+      return;
+    }
+    var data = snap.val();
+    var days = Object.keys(data).sort().reverse().slice(0,7);
+    list.innerHTML = days.map(function(day){
+      var meals = Object.values(data[day]);
+      var totalKcal = meals.reduce(function(a,m){return a+(m.kcal||0);},0);
+      var dateStr = day.slice(0,4)+'-'+day.slice(4,6)+'-'+day.slice(6,8);
+      return '<div style="padding:10px 0;border-bottom:0.5px solid var(--bdr);">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+        +'<div style="font-size:12px;font-weight:600;">'+dateStr+'</div>'
+        +'<div style="font-size:11px;color:var(--or);">'+Math.round(totalKcal)+' kcal</div>'
+        +'</div>'
+        +'<div style="font-size:10px;color:var(--t3);margin-top:3px;">'+meals.slice(0,3).map(function(m){return m.name;}).join(' · ')+(meals.length>3?' 외 '+(meals.length-3)+'개':'')+'</div>'
+        +'</div>';
+    }).join('');
+  }).catch(function(){
+    list.innerHTML='<div style="font-size:12px;color:var(--red);text-align:center;padding:12px;">불러오기 실패</div>';
+  });
+}
+window.showDietHistory=showDietHistory;
 
 function deleteMeal(mealType,idx){
   var order=['아침','점심','저녁','간식','운동 전','운동 후'];
