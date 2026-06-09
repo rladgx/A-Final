@@ -906,9 +906,9 @@ body.light .pbadge{background:rgba(79,70,229,0.15);color:#4F46E5;}
       <div style="font-size:9px;color:var(--t3);">kg <span id="profile-weight-diff" style="font-size:9px;"></span></div>
     </div>
     <div class="sc" style="cursor:pointer;" onclick="editBodyInfo()">
-      <div class="sl">체지방량</div>
+      <div class="sl">체지방률</div>
       <div class="sv" id="profile-fat" style="font-size:17px;">-</div>
-      <div style="font-size:9px;color:var(--t3);">kg <span id="profile-fat-diff" style="font-size:9px;"></span></div>
+      <div style="font-size:9px;color:var(--t3);">% <span id="profile-fat-diff" style="font-size:9px;"></span></div>
     </div>
     <div class="sc" style="cursor:pointer;" onclick="editBodyInfo()">
       <div class="sl">골격근량</div>
@@ -920,6 +920,15 @@ body.light .pbadge{background:rgba(79,70,229,0.15);color:#4F46E5;}
       <div class="sv" id="profile-bmi" style="font-size:17px;">-</div>
       <div style="font-size:9px;" id="profile-bmi-label">-</div>
     </div>
+    <div id="body-last-date"
+     style="
+       text-align:center;
+       font-size:11px;
+       color:var(--t3);
+       margin-bottom:10px;
+     ">
+  최근 측정일 -
+</div>
   </div>
   <button class="btn-g" style="width:100%;justify-content:center;margin-bottom:12px;font-size:12px;" onclick="editBodyInfo()">
     <i class="ti ti-plus"></i> 오늘 신체 정보 기록
@@ -999,6 +1008,17 @@ body.light .pbadge{background:rgba(79,70,229,0.15);color:#4F46E5;}
     <button onclick="doLogout()" style="margin-top:8px;background:rgba(244,67,54,0.1);border:0.5px solid rgba(244,67,54,0.3);color:var(--red);border-radius:8px;padding:7px 18px;font-size:12px;cursor:pointer;">
       <i class="ti ti-logout"></i> 로그아웃
     </button>
+    <button onclick="deleteAccount()"
+        style="margin-top:8px;
+               background:rgba(244,67,54,0.1);
+               border:0.5px solid rgba(244,67,54,0.3);
+               color:var(--red);
+               border-radius:8px;
+               padding:7px 18px;
+               font-size:12px;
+               cursor:pointer;">
+  <i class="ti ti-trash"></i> 계정 삭제
+</button>
   </div>
 </div>
 
@@ -1549,42 +1569,98 @@ function updateBodyDisplay(bodyData){
   const setVal = (id, val, diffId, prevVal) => {
     const el = document.getElementById(id);
     if(el) el.textContent = val!=null ? val : '-';
+
     if(diffId){
       const dEl = document.getElementById(diffId);
+
       if(dEl && val!=null && prevVal!=null){
+
         const diff = (val-prevVal).toFixed(1);
-        dEl.textContent = diff>0 ? `▲${diff}` : diff<0 ? `▼${Math.abs(diff)}` : '-';
-        dEl.style.color = diffId.includes('muscle') ?
-          (diff>0?'var(--green)':'var(--red)') :
-          (diff<0?'var(--green)':'var(--red)');
-      } else if(dEl) dEl.textContent='';
+
+        if(diffId === 'profile-fat-diff'){
+
+          dEl.textContent =
+            diff > 0 ? `▲${diff}%` :
+            diff < 0 ? `▼${Math.abs(diff)}%` :
+            '-';
+
+        } else {
+
+          dEl.textContent =
+            diff > 0 ? `▲${diff}` :
+            diff < 0 ? `▼${Math.abs(diff)}` :
+            '-';
+
+        }
+
+        dEl.style.color = diffId.includes('muscle')
+          ? (diff > 0 ? 'var(--green)' : 'var(--red)')
+          : (diff < 0 ? 'var(--green)' : 'var(--red)');
+
+      }
+      else if(dEl){
+        dEl.textContent = '';
+      }
     }
   };
 
   // BMI 계산
   if(latest && latest.height && latest.weight){
-    var bmi = (latest.weight / Math.pow(latest.height/100, 2)).toFixed(1);
+    var bmi = (
+      latest.weight /
+      Math.pow(latest.height/100, 2)
+    ).toFixed(1);
+
     var bmiEl = document.getElementById('profile-bmi');
     var bmiLbl = document.getElementById('profile-bmi-label');
+
     if(bmiEl) bmiEl.textContent = bmi;
+
     if(bmiLbl){
-      var label = bmi<18.5?'저체중':bmi<23?'정상':bmi<25?'과체중':'비만';
-      var color = bmi<18.5?'var(--blue)':bmi<23?'var(--green)':bmi<25?'var(--amber)':'var(--red)';
+      var label =
+        bmi < 18.5 ? '저체중' :
+        bmi < 23   ? '정상' :
+        bmi < 25   ? '과체중' :
+                     '비만';
+
+      var color =
+        bmi < 18.5 ? 'var(--blue)' :
+        bmi < 23   ? 'var(--green)' :
+        bmi < 25   ? 'var(--amber)' :
+                     'var(--red)';
+
       bmiLbl.textContent = label;
       bmiLbl.style.color = color;
     }
   }
+
   setVal('profile-height', latest?.height, null, null);
   setVal('profile-weight', latest?.weight, 'profile-weight-diff', prev?.weight);
-  setVal('profile-fat',    latest?.fat,    'profile-fat-diff',    prev?.fat);
+  setVal('profile-fat', latest?.fat, 'profile-fat-diff', prev?.fat);
   setVal('profile-muscle', latest?.muscleMass, 'profile-muscle-diff', prev?.muscleMass);
+
+  // 최근 측정일 표시
+  const dateEl = document.getElementById('body-last-date');
+
+  if(dateEl){
+    dateEl.textContent = latest?.date
+      ? `최근 측정일 ${latest.date}`
+      : '최근 측정일 -';
+  }
 
   // 입력폼 채우기
   if(latest){
-    if(latest.height) document.getElementById('input-height').value = latest.height;
-    if(latest.weight) document.getElementById('input-weight').value = latest.weight;
-    if(latest.fat)    document.getElementById('input-fat').value = latest.fat;
-    if(latest.muscleMass) document.getElementById('input-muscle-mass').value = latest.muscleMass;
+    if(latest.height)
+      document.getElementById('input-height').value = latest.height;
+
+    if(latest.weight)
+      document.getElementById('input-weight').value = latest.weight;
+
+    if(latest.fat)
+      document.getElementById('input-fat').value = latest.fat;
+
+    if(latest.muscleMass)
+      document.getElementById('input-muscle-mass').value = latest.muscleMass;
   }
 }
 
@@ -1820,7 +1896,6 @@ function renderTop5(){
   const top5 = [];
   for(var k=0; k<5 && maxHeap.length>0; k++){ top5.push(heapExtractMax(maxHeap)); }
 
-
   if(!top5.length){
     el.innerHTML='<div style="font-size:12px;color:var(--t3);text-align:center;padding:16px;">운동 기록이 없어요</div>';
     return;
@@ -1873,17 +1948,126 @@ function renderMuscleDist(){
 }
 
 function doLogout() {
+
   if(!confirm('로그아웃 하시겠어요?')) return;
+
+  // 사용자 정보 제거
   currentUser = null;
-  localStorage.removeItem('bf_phone');
   window._currentUserId = null;
+
+  // 로그인 정보 제거
+  localStorage.removeItem('bf_phone');
+
+  // 사용자 데이터 초기화
+  if(typeof records !== 'undefined')
+    records = [];
+
+  if(typeof todayMeals !== 'undefined')
+    todayMeals = [];
+
+  if(typeof workoutLog !== 'undefined')
+    workoutLog = [];
+
+  window._bodyHistory = [];
+
+  // 화면 갱신
+  if(typeof renderHistory === 'function')
+    renderHistory();
+
+  if(typeof updateHomeStats === 'function')
+    updateHomeStats();
+
+  // 로그인 화면 이동
   document.getElementById('app').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('login-form').style.display='block';
   document.getElementById('signup-form').style.display='none';
   document.getElementById('phone-input').value='';
+   location.reload();
 }
+
 window.doLogout = doLogout;
+
+function deleteAccount() {
+
+  const ok = confirm(
+    '정말 계정을 삭제하시겠습니까?\n\n운동기록, 식단기록, 프로필이 모두 삭제되며 복구할 수 없습니다.'
+  );
+
+  if(!ok) return;
+
+  if(!currentUser || !currentUser.phone){
+    alert('로그인 정보를 찾을 수 없습니다.');
+    return;
+  }
+
+  const phone = currentUser.phone;
+
+  Promise.all([
+
+    // 사용자 정보 삭제
+    window._remove(
+      window._ref(window._db, 'users/' + phone)
+    ),
+
+    // 식단 기록 삭제
+    window._remove(
+      window._ref(window._db, 'meals/' + phone)
+    )
+
+  ])
+  .then(() => {
+
+    // 운동기록 삭제
+    return window._get(
+      window._ref(window._db, 'records')
+    );
+
+  })
+  .then((snap) => {
+
+    const data = snap.val();
+
+    if(!data) return Promise.resolve();
+
+    const tasks = [];
+
+    Object.entries(data).forEach(([key, value]) => {
+
+      if(value.userId === phone){
+
+        tasks.push(
+          window._remove(
+            window._ref(window._db, 'records/' + key)
+          )
+        );
+
+      }
+
+    });
+
+    return Promise.all(tasks);
+
+  })
+  .then(() => {
+
+    alert('회원 탈퇴가 완료되었습니다.');
+
+    localStorage.removeItem('bf_phone');
+
+    location.reload();
+
+  })
+  .catch((err) => {
+
+    console.error(err);
+
+    alert('회원 탈퇴 중 오류가 발생했습니다.');
+
+  });
+}
+
+window.deleteAccount = deleteAccount;
 
 function backToLogin() {
   document.getElementById('login-form').style.display='block';
@@ -2188,7 +2372,7 @@ function buildExerciseBST() {
       });
     });
   });
-  console.log('[BST] 운동 데이터 삽입 완료:', seen.size, '개');
+  // (init log removed)
 }
 
 // [알고리즘] 운동 검색: DFS + 이진탐색 결합
@@ -2301,7 +2485,6 @@ function addExFromFind(ex) {
   sw('log');
 }
 window.addExFromFind = addExFromFind;
-
 
 // ─────────────────────────────────────────────
 // [기능] 검색어 자동완성 (초성 포함)
@@ -2462,7 +2645,6 @@ function initAllAutoComplete() {
 }
 window.initAllAutoComplete = initAllAutoComplete;
 
-
 // ─────────────────────────────────────────────
 // [기능] 운동 루틴 공유
 // URL 파라미터로 루틴 인코딩 → 링크 공유
@@ -2546,7 +2728,6 @@ function loadRoutineFromUrl() {
   return false;
 }
 window.loadRoutineFromUrl = loadRoutineFromUrl;
-
 
 // ─────────────────────────────────────────────
 // [기능] 칼로리 소모량 계산 (MET 기반)
@@ -3308,10 +3489,6 @@ function checkMyTurnInQueue(eqName, data) {
 }
 
 // showToast가 duration 파라미터 지원하도록 확인 후 패치
-const _origShowToast = window.showToast;
-window.showToast = function(msg, duration) {
-  if (_origShowToast) _origShowToast(msg);
-};
 
 function listenQueue(){
   if(!window._dbReady)return;
